@@ -26,18 +26,19 @@ try {
 var formation = [4, 4, 3];
 
 //write your function here
-function createFormation(formation){
-  if(formation.length==0)
-  {
+function createFormation(formation) {
+  if (formation.length === 0) {
     return null;
   }
-  var play=
-  {
-    defender:formation[0],
-    midfielder:formation[1],
-    forwarder:formation[2]
-  }
-  return play;
+
+  const defaultFormation = { defender: undefined, midfield: undefined, forward: undefined };
+
+  return {
+    ...defaultFormation,
+    ...(formation.length >= 1 && { defender: formation[0] }),
+    ...(formation.length >= 2 && { midfield: formation[1] }),
+    ...(formation.length >= 3 && { forward: formation[2] }),
+  };
 }
 
 // Dont edit the following code
@@ -55,42 +56,52 @@ function filterByDebut(year){
 }
 
 //Progression 4 - Filter players that play at the position _______
-function filterPosition(position){
-  var data=players.filter(player=>player.position==position);
-  return data;
+function filterByPosition(position){
+  let player_position = [ ]
+  for (let i=0 ; i<players.length ; i++){
+    if (players[i].position == position){
+      player_position.push(players[i])
+    }
+  }
+  return player_position
 }
 
 //Progression 5 - Filter players that have won ______ award
-function filterByAward(awardName){
-  let array=[];
-  for(let i=0;i<players.length;i++){
-    for(let j=0;j<players[i].awards.length;j++){
-    if(players[i].awards.includes(awardName)){
-      array.push(players[i]);
-}
+function filterByAward(award){
+  let player_award = [ ]
+  for (let i=0 ; i<players.length ; i++){
+    for(let j=0 ; j<players[i].awards.length ; j++){
+      if (award == players[i].awards[j].name){
+        player_award.push(players[i])
+      }
     }
   }
-  return array;
+  if (award == undefined){
+    player_award= [ ]
+  }
+  return player_award
 }
 
-//Progression 6 - Filter players that won ______ award ____ times
-function filterByAwardxTimes(awardName,noOfTimes){
-  let array=[];
-  let count=0,m=0;
-  let j;
-  for(let i=0;i<players.length;i++){
-    for(j=0;j<players[i].awards.length;j++){
-      if(players[i].awards[j]===awardName){
-        count++;
+//Progression 6 - Filter players that won ______ award ____ timesfunction filterByAwardxTimes(award,t){
+  function filterByAwardxTimes(award,t){
+    let player_award_time = [ ]
+    
+    for (let i=0 ; i<players.length ; i++){
+      let award_count = 0
+      for(let j=0 ; j<players[i].awards.length ; j++){
+        if (award == players[i].awards[j].name){
+          award_count++
+        }
+      }
+      for(let z=0 ; z<players[i].awards.length ; z++){
+        if (award == players[i].awards[z].name && award_count == t){
+          player_award_time.push(players[i])
+          break
+        }
+      }
     }
+    return player_award_time
   }
-  if(count>=noOfTimes){
-    array.push(players[i]);
-  }
-  count=0;
-}
-return array;
-}
 //Progression 7 - Filter players that won ______ award and belong to ______ country
 function filterByAwardxCountry(awardName,country){
   var awardsData=filterByAward(awardName);
@@ -99,22 +110,30 @@ function filterByAwardxCountry(awardName,country){
 }
 
 //Progression 8 - Filter players that won atleast ______ awards, belong to ______ team and are younger than ____
-function filterByNoOfAwardxTeamxAge(noOfTimes,team,age){
-  var data=players.filter(players=>(player.age<age&&player.team==team&&player.awards.length>=noOfAwards));
-  return data;
+function filterByNoOfAwardsxTeamxAge(noaward,team,age){
+  var ans = [ ]
+  console.log(noaward,team,age)
+  for (let i=0 ; i<players.length ; i++){
+    if (players[i].age < age && players[i].team == team && players[i].awards.length >= noaward ){
+      ans.push(players[i])
+      console.log(ans)
+    }
+  }
+  return ans
 }
 
 //Progression 9 - Sort players in descending order of their age
-function SortByAge(){
-  for(let i=0; i<players.length;i++){
-    for(let j=i+1;j<players.length;j++){
-      if(players[i].age>players[j].age){
-        let temp = players[i];  
-        players[i]=players[j];
-        players[j]=temp;
+function sortByAge() {
+  for (let i = 0; i < players.length; i++) {
+    for (let j = i + 1; j < players.length; j++) {
+      if (players[i].age < players[j].age) {
+        let temp = players[i];
+        players[i] = players[j];
+        players[j] = temp;
       }
     }
   }
+  return players; // Return the sorted array
 }
 
 //Progression 10 - Sort players beloging to _____ team in descending order of awards won
